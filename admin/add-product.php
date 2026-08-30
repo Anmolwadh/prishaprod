@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pack = trim((string)($_POST['pack_size'] ?? ''));
     $status = ($_POST['status'] ?? 'Active') === 'Inactive' ? 'Inactive' : 'Active';
     $featured = !empty($_POST['featured']) ? 1 : 0;
+    $gst = max(0, min(100, (float)($_POST['gst'] ?? 18)));
     $discount = calc_discount($mrp, $price);
     $slug = slugify($name);
 
@@ -36,10 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         try {
             $stmt = $pdo->prepare(
-                'INSERT INTO products (category_id, name, slug, sku, description, short_description, price, mrp, discount, stock, pack_size, image, status, featured)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                'INSERT INTO products (category_id, name, slug, sku, description, short_description, price, mrp, discount, gst, stock, pack_size, image, status, featured)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
-            $stmt->execute([$categoryId, $name, $slug . '-' . substr(bin2hex(random_bytes(2)), 0, 4), $sku, $description, $short, $price, $mrp, $discount, $stock, $pack, $imageName, $status, $featured]);
+            $stmt->execute([$categoryId, $name, $slug . '-' . substr(bin2hex(random_bytes(2)), 0, 4), $sku, $description, $short, $price, $mrp, $discount, $gst, $stock, $pack, $imageName, $status, $featured]);
             flash('success', 'Product added.');
             redirect('admin/products.php');
         } catch (PDOException $e) {
@@ -70,6 +71,7 @@ include __DIR__ . '/includes/header.php';
     <div class="col-md-3"><label class="form-label">MRP</label><input type="number" step="0.01" name="mrp" class="form-control" id="mrp" value="<?= e($_POST['mrp'] ?? '0') ?>"></div>
     <div class="col-md-3"><label class="form-label">Selling Price</label><input type="number" step="0.01" name="price" class="form-control" id="price" value="<?= e($_POST['price'] ?? '0') ?>"></div>
     <div class="col-md-3"><label class="form-label">Discount %</label><input type="text" class="form-control" id="discountPreview" readonly value="0"></div>
+    <div class="col-md-3"><label class="form-label">GST %</label><input type="number" step="0.01" min="0" max="100" name="gst" class="form-control" value="<?= e($_POST['gst'] ?? '18') ?>"></div>
     <div class="col-md-3"><label class="form-label">Stock</label><input type="number" name="stock" class="form-control" value="<?= e($_POST['stock'] ?? '0') ?>"></div>
     <div class="col-md-6"><label class="form-label">Pack Size</label><input name="pack_size" class="form-control" value="<?= e($_POST['pack_size'] ?? '') ?>"></div>
     <div class="col-md-3">

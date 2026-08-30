@@ -21,6 +21,8 @@ $discount = (float)$product['discount'];
 if ($discount <= 0) {
     $discount = calc_discount((float)$product['mrp'], (float)$product['price']);
 }
+$displayPrice = product_price_incl_gst($product);
+$mrp = (float)$product['mrp'];
 $stockInfo = stock_label((int)$product['stock']);
 
 $rel = $pdo->prepare(
@@ -53,9 +55,9 @@ include __DIR__ . '/includes/header.php';
         <h1 class="h2 mb-2"><?= e($product['name']) ?></h1>
         <p class="text-muted">SKU: <?= e($product['sku']) ?> · Category: <?= e($product['category_name']) ?></p>
         <div class="price-row mb-2">
-          <span class="price fs-3"><?= e(format_money((float)$product['price'])) ?></span>
-          <?php if ((float)$product['mrp'] > (float)$product['price']): ?>
-            <span class="mrp"><?= e(format_money((float)$product['mrp'])) ?></span>
+          <span class="price fs-3"><?= e(format_money($displayPrice)) ?></span>
+          <?php if ($mrp > $displayPrice): ?>
+            <span class="mrp"><?= e(format_money($mrp)) ?></span>
             <span class="badge text-bg-danger"><?= e(rtrim(rtrim(number_format($discount, 2), '0'), '.')) ?>% OFF</span>
           <?php endif; ?>
         </div>

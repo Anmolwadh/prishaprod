@@ -22,9 +22,7 @@ include __DIR__ . '/includes/header.php';
               <thead>
                 <tr>
                   <th>Product</th>
-                  <th>Price</th>
                   <th>Qty</th>
-                  <th>Total</th>
                   <th></th>
                 </tr>
               </thead>
@@ -40,7 +38,6 @@ include __DIR__ . '/includes/header.php';
                         </div>
                       </div>
                     </td>
-                    <td><?= e(format_money((float)$item['price'])) ?></td>
                     <td>
                       <div class="qty-control">
                         <button type="button" class="btn btn-sm btn-outline-secondary" data-cart-qty="-1" data-product-id="<?= (int)$item['product_id'] ?>">-</button>
@@ -48,7 +45,6 @@ include __DIR__ . '/includes/header.php';
                         <button type="button" class="btn btn-sm btn-outline-secondary" data-cart-qty="1" data-product-id="<?= (int)$item['product_id'] ?>">+</button>
                       </div>
                     </td>
-                    <td class="line-total"><?= e(format_money((float)$item['price'] * (int)$item['qty'])) ?></td>
                     <td><button class="btn btn-sm btn-outline-danger" data-cart-remove data-product-id="<?= (int)$item['product_id'] ?>"><i class="fa-solid fa-trash"></i></button></td>
                   </tr>
                 <?php endforeach; ?>
@@ -63,12 +59,8 @@ include __DIR__ . '/includes/header.php';
         <div class="col-lg-4">
           <div class="summary-box">
             <h2 class="h5 mb-3">Order Summary</h2>
-            <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><strong id="sumSubtotal"><?= e(format_money($totals['subtotal'])) ?></strong></div>
-            <div class="d-flex justify-content-between mb-2"><span>Shipping</span><strong id="sumShipping">At checkout</strong></div>
-            <hr>
-            <div class="d-flex justify-content-between mb-3"><span>Items Total</span><strong class="fs-5 text-success" id="sumTotal"><?= e(format_money($totals['subtotal'])) ?></strong></div>
+            <div class="d-flex justify-content-between mb-3"><span>Total Amount</span><strong class="fs-5 text-success" id="sumTotal"><?= e(format_money((float)$totals['subtotal'] + (float)$totals['tax'])) ?></strong></div>
             <a href="<?= e(url('checkout.php')) ?>" class="btn btn-pe w-100">Proceed to Checkout</a>
-            <p class="small text-muted mt-2 mb-0">Free delivery in <strong>Rajpura</strong>. Delivery charge <?= e(format_money((float)get_setting('shipping_charge', '60'))) ?> for other locations.</p>
           </div>
         </div>
       </div>

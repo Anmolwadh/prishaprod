@@ -69,6 +69,7 @@ include __DIR__ . '/includes/header.php';
       <div class="text-end">
         <div>Subtotal: <?= e(format_money((float)$order['subtotal'])) ?></div>
         <div>Shipping: <?= e(format_money((float)$order['shipping'])) ?></div>
+        <div>GST: <?= e(format_money((float)($order['tax'] ?? 0))) ?></div>
         <div>Discount: <?= e(format_money((float)$order['discount'])) ?></div>
         <div class="fw-bold fs-5">Total: <?= e(format_money((float)$order['total'])) ?></div>
       </div>

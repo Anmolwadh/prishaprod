@@ -141,9 +141,32 @@ function slugify(string $text): string
     return trim($text, '-') ?: 'item';
 }
 
+function round_money(float|int|string $amount): float
+{
+    return (float)round((float)$amount, 0);
+}
+
 function format_money(float|int|string $amount): string
 {
-    return '₹' . number_format((float)$amount, 2);
+    return '₹' . number_format(round_money($amount), 0);
+}
+
+function product_gst_rate(array $product): float
+{
+    $gst = (float)($product['gst'] ?? 0);
+    if ($gst < 0) {
+        return 0.0;
+    }
+    if ($gst > 100) {
+        return 100.0;
+    }
+    return $gst;
+}
+
+function product_price_incl_gst(array $product): float
+{
+    $price = (float)($product['price'] ?? 0);
+    return round_money($price + ($price * product_gst_rate($product) / 100));
 }
 
 function calc_discount(float $mrp, float $price): float
@@ -261,15 +284,30 @@ function shipping_amount(float $subtotal, ?string $city = null, ?string $address
     return round($charge, 2);
 }
 
+function cart_tax(): float
+{
+    $tax = 0.0;
+    foreach (cart() as $item) {
+        $price = (float)$item['price'];
+        $qty = (int)$item['qty'];
+        $gst = (float)($item['gst'] ?? 0);
+        $incl = round_money($price + ($price * $gst / 100));
+        $tax += ($incl * $qty) - ($price * $qty);
+    }
+    return round_money($tax);
+}
+
 function cart_totals(?string $city = null, ?string $address = null, ?string $pincode = null): array
 {
     $subtotal = cart_subtotal();
     $shipping = shipping_amount($subtotal, $city, $address, $pincode);
+    $tax = cart_tax();
     return [
-        'subtotal' => $subtotal,
-        'shipping' => $shipping,
+        'subtotal' => round_money($subtotal),
+        'shipping' => round_money($shipping),
+        'tax'      => $tax,
         'discount' => 0.0,
-        'total'    => round($subtotal + $shipping, 2),
+        'total'    => round_money($subtotal + $tax + $shipping),
         'is_rajpura' => is_rajpura_delivery($city, $address, $pincode),
     ];
 }

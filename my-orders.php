@@ -23,10 +23,10 @@ if ($orderId > 0) {
     <section class="page-hero"><div class="container"><h1 class="h3 mb-0">Order <?= e($order['order_number']) ?></h1></div></section>
     <section class="section-pad"><div class="container">
       <div class="account-card">
-        <p><strong>Status:</strong> <?= e($order['order_status']) ?> · <strong>Payment:</strong> <?= e($order['payment_status']) ?> · <strong>Total:</strong> <?= e(format_money((float)$order['total'])) ?></p>
-        <div class="table-responsive"><table class="table"><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>
+        <p><strong>Status:</strong> <?= e($order['order_status']) ?> · <strong>Payment:</strong> <?= e($order['payment_status']) ?> · <strong>Total Amount:</strong> <?= e(format_money((float)$order['total'])) ?></p>
+        <div class="table-responsive"><table class="table"><thead><tr><th>Product</th><th>Qty</th></tr></thead><tbody>
           <?php foreach ($orderItems as $it): ?>
-            <tr><td><?= e($it['product_name']) ?></td><td><?= (int)$it['quantity'] ?></td><td><?= e(format_money((float)$it['price'])) ?></td><td><?= e(format_money((float)$it['total'])) ?></td></tr>
+            <tr><td><?= e($it['product_name']) ?></td><td><?= (int)$it['quantity'] ?></td></tr>
           <?php endforeach; ?>
         </tbody></table></div>
         <a href="<?= e(url('track-order.php?order=' . urlencode($order['order_number']) . '&phone=' . urlencode($order['phone']))) ?>" class="btn btn-pe">Track Order</a>

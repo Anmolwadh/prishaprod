@@ -53,7 +53,7 @@ include __DIR__ . '/includes/header.php';
 <div class="admin-card">
   <div class="table-responsive">
     <table class="table align-middle">
-      <thead><tr><th>Image</th><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Action</th></tr></thead>
+      <thead><tr><th>Image</th><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>GST</th><th>Stock</th><th>Status</th><th>Action</th></tr></thead>
       <tbody>
         <?php foreach ($products as $p): ?>
           <tr>
@@ -62,6 +62,7 @@ include __DIR__ . '/includes/header.php';
             <td><?= e($p['sku']) ?></td>
             <td><?= e((string)$p['category_name']) ?></td>
             <td><?= e(format_money((float)$p['price'])) ?></td>
+            <td><?= e(rtrim(rtrim(number_format((float)($p['gst'] ?? 0), 2), '0'), '.') ?: '0') ?>%</td>
             <td><?= (int)$p['stock'] ?></td>
             <td><?= e($p['status']) ?></td>
             <td class="text-nowrap">
@@ -70,7 +71,7 @@ include __DIR__ . '/includes/header.php';
             </td>
           </tr>
         <?php endforeach; ?>
-        <?php if (!$products): ?><tr><td colspan="8" class="text-center text-muted">No products found.</td></tr><?php endif; ?>
+        <?php if (!$products): ?><tr><td colspan="9" class="text-center text-muted">No products found.</td></tr><?php endif; ?>
       </tbody>
     </table>
   </div>

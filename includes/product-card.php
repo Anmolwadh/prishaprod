@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 /** @var array $product */
+$displayPrice = product_price_incl_gst($product);
+$mrp = (float)$product['mrp'];
 $discount = (float)$product['discount'];
 if ($discount <= 0) {
-    $discount = calc_discount((float)$product['mrp'], (float)$product['price']);
+    $discount = calc_discount($mrp, (float)$product['price']);
 }
 ?>
 <div class="product-card">
   <div class="img-wrap">
-    <?php if ($discount > 0): ?>
+    <?php if ($discount > 0 && $mrp > $displayPrice): ?>
       <span class="discount-badge"><?= e(rtrim(rtrim(number_format($discount, 2), '0'), '.')) ?>% OFF</span>
     <?php endif; ?>
     <a href="<?= e(url('product.php?id=' . (int)$product['id'])) ?>">
@@ -21,9 +23,9 @@ if ($discount <= 0) {
       <p class="short"><?= e($product['short_description']) ?></p>
     <?php endif; ?>
     <div class="price-row">
-      <span class="price"><?= e(format_money((float)$product['price'])) ?></span>
-      <?php if ((float)$product['mrp'] > (float)$product['price']): ?>
-        <span class="mrp"><?= e(format_money((float)$product['mrp'])) ?></span>
+      <span class="price"><?= e(format_money($displayPrice)) ?></span>
+      <?php if ($mrp > $displayPrice): ?>
+        <span class="mrp"><?= e(format_money($mrp)) ?></span>
       <?php endif; ?>
     </div>
     <?php if (!empty($product['pack_size'])): ?>

@@ -25,17 +25,17 @@ if ($categorySlug !== '') {
     $params[] = $categorySlug;
 }
 if ($minPrice !== null) {
-    $where[] = 'p.price >= ?';
+    $where[] = '(p.price * (1 + COALESCE(p.gst, 0) / 100)) >= ?';
     $params[] = $minPrice;
 }
 if ($maxPrice !== null) {
-    $where[] = 'p.price <= ?';
+    $where[] = '(p.price * (1 + COALESCE(p.gst, 0) / 100)) <= ?';
     $params[] = $maxPrice;
 }
 
 $orderBy = match ($sort) {
-    'price_asc' => 'p.price ASC',
-    'price_desc' => 'p.price DESC',
+    'price_asc' => '(p.price * (1 + COALESCE(p.gst, 0) / 100)) ASC',
+    'price_desc' => '(p.price * (1 + COALESCE(p.gst, 0) / 100)) DESC',
     'name' => 'p.name ASC',
     default => 'p.created_at DESC',
 };

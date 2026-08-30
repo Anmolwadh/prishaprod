@@ -32,7 +32,7 @@ $businessPhone = get_setting('phone', '+918054798966');
 <header class="site-header sticky-top">
   <div class="top-bar d-none d-md-block">
     <div class="container d-flex justify-content-between align-items-center">
-      <div><i class="fa-solid fa-phone me-1"></i> <?= e($businessPhone) ?> &nbsp;|&nbsp; <i class="fa-solid fa-truck-fast me-1"></i> Free delivery in Rajpura · ₹<?= e((string)(int)(float)get_setting('shipping_charge', '60')) ?> elsewhere</div>
+      <div><i class="fa-solid fa-phone me-1"></i> <?= e($businessPhone) ?></div>
       <div>COD Available &nbsp;|&nbsp; Wholesale & Retail</div>
     </div>
   </div>

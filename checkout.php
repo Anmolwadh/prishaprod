@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $orderItems = [];
             $subtotal = 0.0;
             foreach ($cartItems as $item) {
-                $stmt = $pdo->prepare("SELECT id, name, sku, price, stock, status FROM products WHERE id = ? FOR UPDATE");
+                $stmt = $pdo->prepare("SELECT id, name, sku, price, stock, status, gst FROM products WHERE id = ? FOR UPDATE");
                 $stmt->execute([(int)$item['product_id']]);
                 $product = $stmt->fetch();
                 if (!$product || $product['status'] !== 'Active') {
@@ -59,6 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException($product['name'] . ' has insufficient stock.');
                 }
                 $line = round((float)$product['price'] * $qty, 2);
+                $gst = max(0, min(100, (float)($product['gst'] ?? 0)));
+                $incl = round_money((float)$product['price'] + ((float)$product['price'] * $gst / 100));
+                $lineTax = round_money(($incl * $qty) - $line);
                 $subtotal += $line;
                 $orderItems[] = [
                     'product_id' => (int)$product['id'],
@@ -67,18 +70,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'quantity' => $qty,
                     'price' => (float)$product['price'],
                     'total' => $line,
+                    'tax' => $lineTax,
                 ];
             }
 
             $shipping = shipping_amount($subtotal, $city, $address, $pincode);
             $discount = 0.0;
-            $total = round($subtotal + $shipping - $discount, 2);
+            $tax = 0.0;
+            foreach ($orderItems as $oi) {
+                $tax += (float)$oi['tax'];
+            }
+            $tax = round_money($tax);
+            $total = round_money($subtotal + $tax + $shipping - $discount);
             $orderNumber = generate_order_number($pdo);
 
             $ins = $pdo->prepare(
                 "INSERT INTO orders (order_number, customer_id, customer_name, email, phone, address, city, state, pincode, landmark,
-                 subtotal, shipping, discount, total, payment_method, payment_status, order_status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'COD', 'Pending', 'Pending')"
+                 subtotal, shipping, tax, discount, total, payment_method, payment_status, order_status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'COD', 'Pending', 'Pending')"
             );
             $ins->execute([
                 $orderNumber,
@@ -93,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $landmark !== '' ? $landmark : null,
                 $subtotal,
                 $shipping,
+                $tax,
                 $discount,
                 $total,
             ]);
@@ -175,15 +185,6 @@ include __DIR__ . '/includes/header.php';
               <label class="form-label">Landmark</label>
               <input type="text" name="landmark" class="form-control" value="<?= e($_POST['landmark'] ?? '') ?>">
             </div>
-            <div class="col-12">
-              <div class="alert alert-success mb-0 py-2" id="shippingHint">
-                <?php if (!empty($totals['is_rajpura'])): ?>
-                  Free delivery for Rajpura location.
-                <?php else: ?>
-                  Delivery charge <?= e(format_money($shippingCharge)) ?> applies outside Rajpura. Enter city as <strong>Rajpura</strong> for free delivery.
-                <?php endif; ?>
-              </div>
-            </div>
           </div>
           <div class="mt-4 p-3 rounded-3 bg-light">
             <strong>Payment Method:</strong> Cash on Delivery (COD)
@@ -196,13 +197,10 @@ include __DIR__ . '/includes/header.php';
           <?php foreach (cart() as $item): ?>
             <div class="d-flex justify-content-between mb-2 small">
               <span><?= e($item['name']) ?> × <?= (int)$item['qty'] ?></span>
-              <span><?= e(format_money((float)$item['price'] * (int)$item['qty'])) ?></span>
             </div>
           <?php endforeach; ?>
           <hr>
-          <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><strong id="coSubtotal"><?= e(format_money($totals['subtotal'])) ?></strong></div>
-          <div class="d-flex justify-content-between mb-2"><span>Shipping</span><strong id="coShipping"><?= e(format_money($totals['shipping'])) ?></strong></div>
-          <div class="d-flex justify-content-between mb-3"><span>Total</span><strong class="fs-5 text-success" id="coTotal"><?= e(format_money($totals['total'])) ?></strong></div>
+          <div class="d-flex justify-content-between mb-3"><span>Total Amount</span><strong class="fs-5 text-success" id="coTotal"><?= e(format_money($totals['total'])) ?></strong></div>
           <button type="submit" class="btn btn-pe w-100">Place Order</button>
         </div>
       </div>
@@ -213,12 +211,11 @@ include __DIR__ . '/includes/header.php';
 (function () {
   const charge = <?= json_encode($shippingCharge) ?>;
   const subtotal = <?= json_encode((float)$totals['subtotal']) ?>;
+  const tax = <?= json_encode((float)$totals['tax']) ?>;
   const cityEl = document.getElementById('checkoutCity');
   const addressEl = document.getElementById('checkoutAddress');
   const pinEl = document.getElementById('checkoutPincode');
-  const shipEl = document.getElementById('coShipping');
   const totalEl = document.getElementById('coTotal');
-  const hintEl = document.getElementById('shippingHint');
 
   function isRajpura() {
     const text = ((cityEl?.value || '') + ' ' + (addressEl?.value || '') + ' ' + (pinEl?.value || '')).toLowerCase();
@@ -226,29 +223,20 @@ include __DIR__ . '/includes/header.php';
   }
 
   function formatMoney(n) {
-    return '₹' + Number(n).toFixed(2);
+    return '₹' + Math.round(Number(n)).toLocaleString('en-IN');
   }
 
-  function refreshShipping() {
-    const free = isRajpura();
-    const shipping = free ? 0 : (subtotal > 0 ? charge : 0);
-    const total = subtotal + shipping;
-    if (shipEl) shipEl.textContent = formatMoney(shipping);
-    if (totalEl) totalEl.textContent = formatMoney(total);
-    if (hintEl) {
-      hintEl.className = 'alert ' + (free ? 'alert-success' : 'alert-warning') + ' mb-0 py-2';
-      hintEl.innerHTML = free
-        ? 'Free delivery for Rajpura location.'
-        : 'Delivery charge ' + formatMoney(charge) + ' applies outside Rajpura. Enter city as <strong>Rajpura</strong> for free delivery.';
-    }
+  function refreshTotal() {
+    const shipping = isRajpura() ? 0 : (subtotal > 0 ? charge : 0);
+    if (totalEl) totalEl.textContent = formatMoney(Math.round(subtotal + tax + shipping));
   }
 
   ['input', 'change', 'blur'].forEach(function (evt) {
-    cityEl?.addEventListener(evt, refreshShipping);
-    addressEl?.addEventListener(evt, refreshShipping);
-    pinEl?.addEventListener(evt, refreshShipping);
+    cityEl?.addEventListener(evt, refreshTotal);
+    addressEl?.addEventListener(evt, refreshTotal);
+    pinEl?.addEventListener(evt, refreshTotal);
   });
-  refreshShipping();
+  refreshTotal();
 })();
 </script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

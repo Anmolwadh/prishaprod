@@ -48,7 +48,6 @@ include __DIR__ . '/includes/header.php';
 
       <h2 class="h4 mt-4">6. Shipping &amp; Delivery</h2>
       <ul>
-        <li>Shipping charges and free-shipping thresholds are shown at checkout and may be updated in our settings.</li>
         <li>Delivery timelines are estimates and may vary by location and courier conditions.</li>
         <li>Please ensure your phone number and address are correct for smooth delivery.</li>
       </ul>

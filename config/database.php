@@ -44,6 +44,7 @@ function getDB(): PDO
     try {
         $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         ensure_clients_schema($pdo);
+        ensure_product_gst_schema($pdo);
     } catch (PDOException $e) {
         error_log('Database connection failed: ' . $e->getMessage());
         http_response_code(500);
@@ -79,4 +80,16 @@ function ensure_clients_schema(PDO $pdo): void
     $insert->execute(['Fine Dine Restaurant', 'Premium dining partner using our meal trays, containers and packaging for dine-in and takeaway service.', 1, 'Active']);
     $insert->execute(['Chandu Chat', 'Popular chat and snack outlet supplied with disposable plates, glasses and food packaging for daily service.', 2, 'Active']);
     $insert->execute(['Agra Chat Bhandar', 'Trusted chat bhandar partner supplied with disposable plates, glasses and packaging for everyday service.', 3, 'Active']);
+}
+
+function ensure_product_gst_schema(PDO $pdo): void
+{
+    $hasGst = $pdo->query("SHOW COLUMNS FROM products LIKE 'gst'")->fetch();
+    if (!$hasGst) {
+        $pdo->exec('ALTER TABLE products ADD COLUMN gst DECIMAL(5,2) NOT NULL DEFAULT 18.00 AFTER discount');
+    }
+    $hasTax = $pdo->query("SHOW COLUMNS FROM orders LIKE 'tax'")->fetch();
+    if (!$hasTax) {
+        $pdo->exec('ALTER TABLE orders ADD COLUMN tax DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER shipping');
+    }
 }

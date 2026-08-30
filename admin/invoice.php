@@ -71,6 +71,7 @@ $orderItems = $items->fetchAll();
     <div class="text-end">
       <div>Subtotal: <?= e(format_money((float)$order['subtotal'])) ?></div>
       <div>Shipping: <?= e(format_money((float)$order['shipping'])) ?></div>
+      <div>GST: <?= e(format_money((float)($order['tax'] ?? 0))) ?></div>
       <div class="fw-bold">Total: <?= e(format_money((float)$order['total'])) ?></div>
       <div class="mt-2">Payment: <?= e($order['payment_method']) ?> (<?= e($order['payment_status']) ?>)</div>
       <div>Order Status: <?= e($order['order_status']) ?></div>

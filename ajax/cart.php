@@ -25,7 +25,7 @@ try {
         if ($productId <= 0) {
             json_response(['success' => false, 'message' => 'Invalid product.'], 400);
         }
-        $stmt = $pdo->prepare("SELECT id, name, sku, price, stock, image, pack_size FROM products WHERE id = ? AND status = 'Active'");
+        $stmt = $pdo->prepare("SELECT id, name, sku, price, stock, image, pack_size, gst FROM products WHERE id = ? AND status = 'Active'");
         $stmt->execute([$productId]);
         $product = $stmt->fetch();
         if (!$product) {
@@ -68,6 +68,7 @@ try {
             'image' => $product['image'],
             'pack_size' => $product['pack_size'],
             'stock' => (int)$product['stock'],
+            'gst' => max(0, min(100, (float)($product['gst'] ?? 0))),
         ];
 
         $totals = cart_totals();

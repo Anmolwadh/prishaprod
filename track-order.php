@@ -71,7 +71,7 @@ include __DIR__ . '/includes/header.php';
           <div class="col-md-4"><strong>Order Date</strong><div><?= e(date('d M Y, h:i A', strtotime($order['created_at']))) ?></div></div>
           <div class="col-md-4"><strong>Current Status</strong><div class="fw-bold text-success"><?= e($order['order_status']) ?></div></div>
           <div class="col-md-4"><strong>Payment Status</strong><div><?= e($order['payment_status']) ?></div></div>
-          <div class="col-md-4"><strong>Total</strong><div><?= e(format_money((float)$order['total'])) ?></div></div>
+          <div class="col-md-4"><strong>Total Amount</strong><div><?= e(format_money((float)$order['total'])) ?></div></div>
         </div>
 
         <?php if ($order['order_status'] === 'Cancelled'): ?>
@@ -95,14 +95,12 @@ include __DIR__ . '/includes/header.php';
         <h2 class="h5 mt-4">Products</h2>
         <div class="table-responsive">
           <table class="table">
-            <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+            <thead><tr><th>Product</th><th>Qty</th></tr></thead>
             <tbody>
               <?php foreach ($items as $it): ?>
                 <tr>
                   <td><?= e($it['product_name']) ?></td>
                   <td><?= (int)$it['quantity'] ?></td>
-                  <td><?= e(format_money((float)$it['price'])) ?></td>
-                  <td><?= e(format_money((float)$it['total'])) ?></td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
