@@ -1,0 +1,4 @@
+deploy-to-xampp.bat
+deploy-exclude.txt
+.git\
+agent-transcripts\

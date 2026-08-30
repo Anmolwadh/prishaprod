@@ -1,0 +1,5 @@
+Options -Indexes
+ErrorDocument 404 /prisha-enterprises/404.php
+<FilesMatch "\.(sql|env|ini|log)$">
+  Require all denied
+</FilesMatch>

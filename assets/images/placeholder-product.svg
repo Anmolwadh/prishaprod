@@ -1,0 +1,19 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Product placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe4e6"/>
+      <stop offset="100%" stop-color="#fecdd3"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <rect x="150" y="180" width="300" height="220" rx="18" fill="#fff" stroke="#334155" stroke-width="4"/>
+  <rect x="175" y="210" width="80" height="100" rx="8" fill="#fecdd3"/>
+  <rect x="265" y="210" width="80" height="100" rx="8" fill="#94a3b8"/>
+  <rect x="355" y="210" width="70" height="100" rx="8" fill="#e11d48"/>
+  <text x="300" y="450" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#0f172a">Prisha Enterprises</text>
+  <text x="300" y="485" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#388e3c">Disposable Products</text>
+</svg>
+
+
+
+

@@ -1,0 +1,82 @@
+<?php
+/**
+ * Database configuration - Prisha Enterprises
+ */
+declare(strict_types=1);
+
+define('DB_HOST', '127.0.0.1');
+define('DB_NAME', 'prisha_enterprises');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_CHARSET', 'utf8mb4');
+
+/**
+ * Application base URL (no trailing slash)
+ * Change if your folder name differs under htdocs
+ */
+// Empty for PHP built-in server (http://localhost:8080)
+// Use '/prisha-enterprises' if running under Apache/XAMPP htdocs
+define('BASE_URL', '');
+define('BASE_PATH', dirname(__DIR__));
+
+define('SITE_NAME', 'Prisha Enterprises');
+define('SESSION_TIMEOUT', 7200); // 2 hours
+define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024); // 5MB
+define('UPLOAD_DIR', BASE_PATH . '/uploads/products/');
+define('UPLOAD_URL', BASE_URL . '/uploads/products/');
+
+date_default_timezone_set('Asia/Kolkata');
+
+function getDB(): PDO
+{
+    static $pdo = null;
+    if ($pdo instanceof PDO) {
+        return $pdo;
+    }
+
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+
+    try {
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        ensure_clients_schema($pdo);
+    } catch (PDOException $e) {
+        error_log('Database connection failed: ' . $e->getMessage());
+        http_response_code(500);
+        if (php_sapi_name() !== 'cli') {
+            include BASE_PATH . '/includes/error-500.php';
+            exit;
+        }
+        throw $e;
+    }
+
+    return $pdo;
+}
+
+function ensure_clients_schema(PDO $pdo): void
+{
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS clients (
+          id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(150) NOT NULL,
+          description TEXT NULL,
+          sort_order INT NOT NULL DEFAULT 0,
+          status ENUM('Active','Inactive') NOT NULL DEFAULT 'Active',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          KEY idx_clients_status (status)
+        ) ENGINE=InnoDB"
+    );
+    $count = (int)$pdo->query('SELECT COUNT(*) FROM clients')->fetchColumn();
+    if ($count > 0) {
+        return;
+    }
+    $insert = $pdo->prepare('INSERT INTO clients (name, description, sort_order, status) VALUES (?, ?, ?, ?)');
+    $insert->execute(['Fine Dine Restaurant', 'Premium dining partner using our meal trays, containers and packaging for dine-in and takeaway service.', 1, 'Active']);
+    $insert->execute(['Chandu Chat', 'Popular chat and snack outlet supplied with disposable plates, glasses and food packaging for daily service.', 2, 'Active']);
+    $insert->execute(['Agra Chat Bhandar', 'Trusted chat bhandar partner supplied with disposable plates, glasses and packaging for everyday service.', 3, 'Active']);
+}
