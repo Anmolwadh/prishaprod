@@ -38,8 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $up = upload_product_image($_FILES['image']);
         if (!$up['success']) $errors[] = $up['message'];
         else {
-            if ($imageName && str_starts_with($imageName, 'prod_') && file_exists(UPLOAD_DIR . $imageName)) {
-                @unlink(UPLOAD_DIR . $imageName);
+            if ($imageName && str_starts_with((string)$imageName, 'prod_')) {
+                foreach ([UPLOAD_DIR . $imageName, BASE_PATH . '/assets/images/' . $imageName] as $old) {
+                    if (is_file($old)) {
+                        @unlink($old);
+                    }
+                }
             }
             $imageName = $up['filename'];
         }
@@ -52,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             $upd->execute([$categoryId, $name, $sku, $description, $short, $price, $mrp, $discount, $gst, $stock, $pack, $imageName, $status, $featured, $id]);
             flash('success', 'Product updated.');
-            redirect('admin/products.php');
+            redirect('admin/edit-product.php?id=' . $id);
         } catch (PDOException $e) {
             error_log($e->getMessage());
             $errors[] = 'Could not update product. SKU may already exist.';
@@ -98,7 +102,7 @@ include __DIR__ . '/includes/header.php';
     <div class="col-md-6">
       <label class="form-label">Image (JPG, PNG or WEBP, max 5MB)</label>
       <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
-      <img class="mt-2 rounded" src="<?= e(product_image_url($product['image'])) ?>" width="100" alt="">
+      <img class="mt-2 rounded" src="<?= e(product_image_url($product['image'])) ?>" width="120" alt="" style="max-height:120px;object-fit:contain;background:#f3faf4">
     </div>
     <div class="col-12"><button class="btn btn-success" type="submit">Update Product</button> <a href="<?= e(url('admin/products.php')) ?>" class="btn btn-outline-secondary">Cancel</a></div>
   </form>

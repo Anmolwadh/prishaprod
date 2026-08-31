@@ -215,15 +215,27 @@ function set_setting(string $key, string $value): void
 
 function product_image_url(?string $image): string
 {
-    if ($image && file_exists(UPLOAD_DIR . $image)) {
-        return UPLOAD_URL . rawurlencode($image);
+    if (!$image) {
+        return asset('images/placeholder-product.jpg');
     }
-    if ($image && file_exists(BASE_PATH . '/assets/images/' . $image)) {
-        return asset('images/' . $image);
+    $name = basename($image);
+    $url = asset('images/' . rawurlencode($name));
+    if (str_starts_with($name, 'prod_')) {
+        $path = BASE_PATH . '/assets/images/' . $name;
+        if (is_file($path)) {
+            return $url . '?v=' . filemtime($path);
+        }
+        return $url . '?v=' . time();
     }
-    $svg = $image ? preg_replace('/\.(jpe?g|png|webp)$/i', '.svg', $image) : null;
-    if ($svg && $svg !== $image && file_exists(BASE_PATH . '/assets/images/' . $svg)) {
-        return asset('images/' . $svg);
+    if (is_file(BASE_PATH . '/assets/images/' . $name)) {
+        return asset('images/' . rawurlencode($name));
+    }
+    if (is_file(UPLOAD_DIR . $name)) {
+        return UPLOAD_URL . rawurlencode($name);
+    }
+    $svg = preg_replace('/\.(jpe?g|png|webp)$/i', '.svg', $name);
+    if (is_string($svg) && $svg !== $name && is_file(BASE_PATH . '/assets/images/' . $svg)) {
+        return asset('images/' . rawurlencode($svg));
     }
     return asset('images/placeholder-product.jpg');
 }
@@ -366,7 +378,7 @@ function upload_product_image(array $file): array
     if (($file['size'] ?? 0) > UPLOAD_MAX_SIZE) {
         return ['success' => false, 'message' => 'Image must be under 5MB.', 'filename' => null];
     }
-    if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+    if (empty($file['tmp_name']) || !is_file($file['tmp_name'])) {
         return ['success' => false, 'message' => 'Invalid upload. Please try again.', 'filename' => null];
     }
 
@@ -382,19 +394,27 @@ function upload_product_image(array $file): array
         return ['success' => false, 'message' => 'Invalid image type. Please upload a real JPG, PNG or WEBP file.', 'filename' => null];
     }
 
-    if (!is_dir(UPLOAD_DIR) && !mkdir(UPLOAD_DIR, 0755, true) && !is_dir(UPLOAD_DIR)) {
-        return ['success' => false, 'message' => 'Could not create upload folder.', 'filename' => null];
-    }
-    if (!is_writable(UPLOAD_DIR)) {
-        return ['success' => false, 'message' => 'Upload folder is not writable.', 'filename' => null];
-    }
-
     $safeExt = $ext === 'jpeg' ? 'jpg' : $ext;
     $filename = 'prod_' . bin2hex(random_bytes(8)) . '.' . $safeExt;
-    $dest = UPLOAD_DIR . $filename;
-    if (!move_uploaded_file($file['tmp_name'], $dest) && !@copy($file['tmp_name'], $dest)) {
-        return ['success' => false, 'message' => 'Could not save uploaded file.', 'filename' => null];
+    $assetDir = BASE_PATH . '/assets/images/';
+    $destAsset = $assetDir . $filename;
+    $tmp = (string)$file['tmp_name'];
+
+    if (!is_dir($assetDir) && !@mkdir($assetDir, 0755, true) && !is_dir($assetDir)) {
+        return ['success' => false, 'message' => 'Could not create image folder. Set assets/images to 755.', 'filename' => null];
     }
+    if (!is_writable($assetDir)) {
+        return ['success' => false, 'message' => 'Image folder is not writable. In File Manager set public_html/assets/images permission to 755 or 775.', 'filename' => null];
+    }
+
+    $saved = @copy($tmp, $destAsset);
+    if (!$saved && is_uploaded_file($tmp)) {
+        $saved = @move_uploaded_file($tmp, $destAsset);
+    }
+    if (!$saved) {
+        return ['success' => false, 'message' => 'Could not save image. Set public_html/assets/images to 755.', 'filename' => null];
+    }
+    @chmod($destAsset, 0644);
 
     return ['success' => true, 'message' => 'Uploaded.', 'filename' => $filename];
 }
