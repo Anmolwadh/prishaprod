@@ -12,93 +12,18 @@ $clients = $pdo->query("SELECT * FROM clients WHERE status = 'Active' ORDER BY s
 
 include __DIR__ . '/includes/header.php';
 ?>
-<section class="hero-slider-section">
-  <div id="heroCarousel" class="carousel slide hero-slider carousel-fade" data-bs-ride="carousel" data-bs-interval="5500" data-bs-pause="hover">
-    <!-- Carousel Indicators -->
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
-    </div>
-
-    <div class="carousel-inner">
-      <!-- Slide 1: Meal Trays -->
-      <div class="carousel-item active">
-        <div class="slide-bg" style="background-image: url('<?= e(asset('images/banner-meal-trays.jpg')) ?>');"></div>
-        <div class="slide-overlay"></div>
-        <div class="container position-relative">
-          <div class="slide-content">
-            <span class="slide-badge"><i class="fa-solid fa-layer-group me-1"></i> Wholesale &amp; Retail</span>
-            <h1 class="slide-title">Multi-Compartment Meal Trays</h1>
-            <p class="slide-desc">Durable 3, 5 &amp; 8 compartment disposable meal trays with secure lids. Ideal for thali service, restaurants, mess halls &amp; catering.</p>
-            <div class="d-flex flex-wrap gap-2">
-              <a href="<?= e(url('shop.php?category=meal-trays')) ?>" class="btn btn-pe-light"><i class="fa-solid fa-cart-shopping me-1"></i> Shop Meal Trays</a>
-              <a href="<?= e(url('shop.php')) ?>" class="btn btn-pe-outline">View All Products</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 2: Containers -->
-      <div class="carousel-item">
-        <div class="slide-bg" style="background-image: url('<?= e(asset('images/banner-containers.jpg')) ?>');"></div>
-        <div class="slide-overlay"></div>
-        <div class="container position-relative">
-          <div class="slide-content">
-            <span class="slide-badge"><i class="fa-solid fa-box me-1"></i> Leak-Proof &amp; Microwave Safe</span>
-            <h2 class="slide-title">Disposable Food Containers &amp; Boxes</h2>
-            <p class="slide-desc">Round and rectangular containers with tight snap-fit lids in 500ml, 750ml, &amp; 1000ml sizes for takeaway food delivery and kitchen storage.</p>
-            <div class="d-flex flex-wrap gap-2">
-              <a href="<?= e(url('shop.php?category=disposable-containers')) ?>" class="btn btn-pe-light"><i class="fa-solid fa-cart-shopping me-1"></i> Shop Containers</a>
-              <a href="<?= e(url('bulk-order.php')) ?>" class="btn btn-pe-outline">Bulk Enquiry</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 3: Ripple Glasses -->
-      <div class="carousel-item">
-        <div class="slide-bg" style="background-image: url('<?= e(asset('images/banner-glasses.jpg')) ?>');"></div>
-        <div class="slide-overlay"></div>
-        <div class="container position-relative">
-          <div class="slide-content">
-            <span class="slide-badge"><i class="fa-solid fa-mug-hot me-1"></i> Heat Insulated</span>
-            <h2 class="slide-title">Premium Ripple Glasses &amp; Cups</h2>
-            <p class="slide-desc">Double &amp; ripple wall insulated disposable glasses (200ml, 250ml) for tea, coffee, cafes, roadside kiosks, events &amp; parties.</p>
-            <div class="d-flex flex-wrap gap-2">
-              <a href="<?= e(url('shop.php?category=disposable-glasses')) ?>" class="btn btn-pe-light"><i class="fa-solid fa-cart-shopping me-1"></i> Shop Glasses</a>
-              <a href="<?= e(url('categories.php')) ?>" class="btn btn-pe-outline">All Categories</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 4: Butter Paper & Packaging -->
-      <div class="carousel-item">
-        <div class="slide-bg" style="background-image: url('<?= e(asset('images/banner-packaging.jpg')) ?>');"></div>
-        <div class="slide-overlay"></div>
-        <div class="container position-relative">
-          <div class="slide-content">
-            <span class="slide-badge"><i class="fa-solid fa-scroll me-1"></i> Food-Grade &amp; Non-Stick</span>
-            <h2 class="slide-title">Butter Paper Rolls &amp; Packaging</h2>
-            <p class="slide-desc">Premium food wrapping butter paper rolls (1KG), burger wrap sheets, and bakery food packaging supplies at unbeatable prices.</p>
-            <div class="d-flex flex-wrap gap-2">
-              <a href="<?= e(url('shop.php?category=butter-paper')) ?>" class="btn btn-pe-light"><i class="fa-solid fa-cart-shopping me-1"></i> Shop Butter Paper</a>
-              <a href="<?= e(url('contact.php')) ?>" class="btn btn-pe-outline">Contact Sales</a>
-            </div>
-          </div>
-        </div>
+<section class="hero">
+  <div class="hero-media" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <p class="hero-brand">Prisha Enterprises</p>
+      <h1>Quality Disposable Products at Wholesale Prices</h1>
+      <p>Shop food packaging and disposable products for restaurants, caterers, events, businesses and everyday use.</p>
+      <div class="hero-actions d-flex flex-wrap gap-2">
+        <a href="<?= e(url('shop.php')) ?>" class="btn btn-pe-light">Shop Now</a>
+        <a href="<?= e(url('categories.php')) ?>" class="btn btn-pe-outline">View Categories</a>
       </div>
     </div>
-
-    <!-- Carousel Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous Slide">
-      <i class="fa-solid fa-chevron-left"></i>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Next Slide">
-      <i class="fa-solid fa-chevron-right"></i>
-    </button>
   </div>
 </section>
 
