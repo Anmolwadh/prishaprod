@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -12,6 +13,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Sync Files to Live Server via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -25,6 +28,8 @@ jobs:
             **/.git*/**
             **/config/database.php
             **/start-server.bat
+            **/stop-server.bat
+            **/deploy.bat
             **/deploy-to-xampp.bat
             **/deploy-exclude.txt
             **/README.md
