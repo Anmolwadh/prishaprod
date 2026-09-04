@@ -107,6 +107,16 @@ include __DIR__ . '/includes/header.php';
         </form>
       </div>
       <div class="col-lg-9">
+        <div class="festive-banner-card mb-4 p-3 p-md-4">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <span class="festive-badge mb-1"><i class="fa-solid fa-feather me-1"></i> Janmashtami Special</span>
+              <h3 class="h5 text-white mb-1">Get Flat 10% OFF on All Products</h3>
+              <p class="small text-white-50 mb-0">Celebrate with wholesale prices on meal trays, containers &amp; packaging.</p>
+            </div>
+            <span class="festive-coupon">Code: <strong>KRISHNA10</strong></span>
+          </div>
+        </div>
         <div class="d-flex justify-content-between align-items-center mb-3">
           <p class="mb-0 text-muted"><?= (int)$total ?> product(s) found</p>
         </div>

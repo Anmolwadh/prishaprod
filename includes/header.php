@@ -30,6 +30,13 @@ $businessPhone = get_setting('phone', '+918054798966');
 </head>
 <body class="<?= e($bodyClass) ?>">
 <header class="site-header sticky-top">
+  <div class="festive-promo-bar text-center py-1.5 px-3 text-white">
+    <div class="container d-flex justify-content-center align-items-center gap-2 flex-wrap text-center">
+      <span class="badge bg-warning text-dark fw-bold px-2 py-0.5"><i class="fa-solid fa-feather me-1"></i> Janmashtami Sale</span>
+      <span><strong>Flat 10% OFF</strong> on all disposable products!</span>
+      <a href="<?= e(url('shop.php')) ?>" class="badge bg-white text-success text-decoration-none fw-bold px-2 py-1 ms-1">Shop Now &rarr;</a>
+    </div>
+  </div>
   <div class="top-bar d-none d-md-block">
     <div class="container d-flex justify-content-between align-items-center">
       <div><i class="fa-solid fa-phone me-1"></i> <?= e($businessPhone) ?></div>
