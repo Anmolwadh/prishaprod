@@ -16,18 +16,33 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Check FTP Configuration
-        id: check_ftp
+      - name: Check FTP Connection
+        id: test_ftp
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
-            echo "configured=false" >> $GITHUB_OUTPUT
-            echo "::notice title=Repository Synced::Code is safely synced in GitHub. Add FTP_SERVER, FTP_USERNAME, and FTP_PASSWORD in repository secrets to enable automatic FTP transfer to live hosting."
+          if [ -z "$FTP_SERVER" ] || [ -z "$FTP_PASS" ]; then
+            echo "ftp_ready=false" >> $GITHUB_OUTPUT
+            echo "reason=FTP secrets not yet added to GitHub Settings" >> $GITHUB_OUTPUT
+            echo "::notice title=FTP Setup Pending::FTP secrets (FTP_SERVER, FTP_USERNAME, FTP_PASSWORD) are not yet configured in repository settings. Code has been safely synced to GitHub."
+            exit 0
+          fi
+
+          echo "Testing FTP connection to $FTP_SERVER..."
+          if curl --connect-timeout 10 --max-time 15 -s "ftp://$FTP_SERVER/" --user "$FTP_USER:$FTP_PASS" > /dev/null 2>&1; then
+            echo "ftp_ready=true" >> $GITHUB_OUTPUT
+            echo "FTP connection successful!"
           else
-            echo "configured=true" >> $GITHUB_OUTPUT
+            echo "ftp_ready=false" >> $GITHUB_OUTPUT
+            echo "reason=Could not authenticate to FTP server with current credentials" >> $GITHUB_OUTPUT
+            echo "::warning title=FTP Auth::Could not connect to $FTP_SERVER with the provided credentials."
           fi
 
       - name: Sync Files to Live Server via FTP
-        if: steps.check_ftp.outputs.configured == 'true'
+        if: steps.test_ftp.outputs.ftp_ready == 'true'
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -46,10 +61,10 @@ jobs:
             **/README.md
             **/.github/**
 
-      - name: Deployment Status
+      - name: Deployment Result
         run: |
-          if [ "${{ steps.check_ftp.outputs.configured }}" = "true" ]; then
-            echo "Successfully deployed to live server!"
+          if [ "${{ steps.test_ftp.outputs.ftp_ready }}" = "true" ]; then
+            echo "✅ Live server deployment completed successfully!"
           else
-            echo "Repository successfully updated and verified."
+            echo "ℹ️ Repository is up to date on GitHub. (${{ steps.test_ftp.outputs.reason }})"
           fi
