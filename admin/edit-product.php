@@ -24,12 +24,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $short = trim((string)($_POST['short_description'] ?? ''));
     $mrp = (float)($_POST['mrp'] ?? 0);
     $price = (float)($_POST['price'] ?? 0);
+    $discount = max(0, min(100, (float)($_POST['discount'] ?? 0)));
     $stock = (int)($_POST['stock'] ?? 0);
     $pack = trim((string)($_POST['pack_size'] ?? ''));
     $status = ($_POST['status'] ?? 'Active') === 'Inactive' ? 'Inactive' : 'Active';
     $featured = !empty($_POST['featured']) ? 1 : 0;
     $gst = max(0, min(100, (float)($_POST['gst'] ?? 18)));
-    $discount = calc_discount($mrp, $price);
+    
+    if ($discount > 0 && $mrp > 0 && $price <= 0) {
+        $price = round($mrp * (1 - ($discount / 100)), 2);
+    } elseif ($discount <= 0 && $mrp > 0 && $price > 0 && $price < $mrp) {
+        $discount = calc_discount($mrp, $price);
+    }
+    
     $imageName = $product['image'];
 
     if ($name === '' || $sku === '' || $categoryId <= 0) $errors[] = 'Name, SKU and category are required.';
@@ -85,7 +92,7 @@ include __DIR__ . '/includes/header.php';
     </div>
     <div class="col-md-3"><label class="form-label">MRP</label><input type="number" step="0.01" name="mrp" id="mrp" class="form-control" value="<?= e((string)$product['mrp']) ?>"></div>
     <div class="col-md-3"><label class="form-label">Selling Price</label><input type="number" step="0.01" name="price" id="price" class="form-control" value="<?= e((string)$product['price']) ?>"></div>
-    <div class="col-md-3"><label class="form-label">Discount %</label><input type="text" class="form-control" id="discountPreview" readonly value="<?= e((string)$product['discount']) ?>"></div>
+    <div class="col-md-3"><label class="form-label">Discount %</label><input type="number" step="0.01" min="0" max="100" name="discount" id="discount" class="form-control" value="<?= e((string)$product['discount']) ?>"></div>
     <div class="col-md-3"><label class="form-label">GST %</label><input type="number" step="0.01" min="0" max="100" name="gst" class="form-control" value="<?= e((string)($product['gst'] ?? '18')) ?>"></div>
     <div class="col-md-3"><label class="form-label">Stock</label><input type="number" name="stock" class="form-control" value="<?= e((string)$product['stock']) ?>"></div>
     <div class="col-md-6"><label class="form-label">Pack Size</label><input name="pack_size" class="form-control" value="<?= e((string)$product['pack_size']) ?>"></div>
@@ -108,8 +115,39 @@ include __DIR__ . '/includes/header.php';
   </form>
 </div>
 <script>
-function updDisc(){const m=+document.getElementById('mrp').value||0,p=+document.getElementById('price').value||0;document.getElementById('discountPreview').value=(m>0&&p<m)?(((m-p)/m)*100).toFixed(2):'0';}
-document.getElementById('mrp').addEventListener('input',updDisc);
-document.getElementById('price').addEventListener('input',updDisc);
+const mrpInput = document.getElementById('mrp');
+const priceInput = document.getElementById('price');
+const discountInput = document.getElementById('discount');
+
+discountInput.addEventListener('input', function() {
+  const m = parseFloat(mrpInput.value) || 0;
+  const d = parseFloat(this.value);
+  if (m > 0 && !isNaN(d) && d >= 0 && d <= 100) {
+    priceInput.value = (m - (m * d / 100)).toFixed(2);
+  }
+});
+
+priceInput.addEventListener('input', function() {
+  const m = parseFloat(mrpInput.value) || 0;
+  const p = parseFloat(this.value) || 0;
+  if (m > 0 && p >= 0) {
+    if (p < m) {
+      discountInput.value = (((m - p) / m) * 100).toFixed(2);
+    } else {
+      discountInput.value = '0';
+    }
+  }
+});
+
+mrpInput.addEventListener('input', function() {
+  const m = parseFloat(this.value) || 0;
+  const d = parseFloat(discountInput.value);
+  const p = parseFloat(priceInput.value) || 0;
+  if (m > 0 && !isNaN(d) && d > 0 && d <= 100) {
+    priceInput.value = (m - (m * d / 100)).toFixed(2);
+  } else if (m > 0 && p > 0 && p < m) {
+    discountInput.value = (((m - p) / m) * 100).toFixed(2);
+  }
+});
 </script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

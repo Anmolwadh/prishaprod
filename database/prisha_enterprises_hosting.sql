@@ -349,7 +349,7 @@ INSERT INTO `products` VALUES
 (6,2,'500ml  rectangular Disposable Container with Lid','1000ml-disposable-container-with-lid','PE-DC-1000','1 litre disposable container with lid for family portions and bulk takeaway. Strong walls and secure snap lid.','1L container perfect for large portions.',210.00,260.00,19.23,18.00,220,'Pack of 50','prod_6f7226c3e5c1b210.webp','Active',1,'2026-08-09 18:15:12','2026-08-30 16:44:48'),
 (7,3,'Ripple Glass 200ml','ripple-glass-200ml','PE-RG-200','200ml ripple wall disposable glass for hot beverages. Heat-insulated design keeps drinks warm and hands cool.','Insulated 200ml ripple paper glass.',95.00,120.00,20.83,18.00,400,'Pack of 100','prod_99c47f3eb19e2cea.jpg','Active',1,'2026-08-09 18:15:12','2026-08-30 16:46:31'),
 (8,3,'Ripple Glass 250ml','ripple-glass-250ml','PE-RG-250','250ml ripple disposable glass suitable for tea, coffee and soft drinks. Ideal for cafes, stalls and events.','250ml ripple glass for cafes and events.',110.00,140.00,21.43,18.00,349,'Pack of 100','prod_e4d701c65abfd5fb.jpg','Active',1,'2026-08-09 18:15:12','2026-08-30 16:57:01'),
-(10,5,'Butter Paper Roll','butter-paper-roll','PE-BP-ROLL','Food-grade butter paper roll for wrapping, baking and packing. Non-stick surface suitable for kitchens and bakeries.','Food-grade butter paper roll for wrapping.',160.00,250.00,36.00,18.00,114,'1KG','prod_4c1df2e83893bdb0.webp','Active',1,'2026-08-09 18:15:12','2026-08-30 17:55:04');
+(10,5,'Butter Paper Roll','butter-paper-roll','PE-BP-ROLL','Food-grade butter paper roll for wrapping, baking and packing. Non-stick surface suitable for kitchens and bakeries.','Food-grade butter paper roll for wrapping.',200.00,250.00,20.00,18.00,114,'1KG','prod_4c1df2e83893bdb0.webp','Active',1,'2026-08-09 18:15:12','2026-09-04 03:47:16');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 COMMIT;
 SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
@@ -398,4 +398,4 @@ SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-08-31 11:48:25
+-- Dump completed on 2026-09-03 20:48:16

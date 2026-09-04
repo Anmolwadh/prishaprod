@@ -56,8 +56,10 @@ include __DIR__ . '/includes/header.php';
         <p class="text-muted">SKU: <?= e($product['sku']) ?> · Category: <?= e($product['category_name']) ?></p>
         <div class="price-row mb-2">
           <span class="price fs-3"><?= e(format_money($displayPrice)) ?></span>
-          <?php if ($mrp > $displayPrice): ?>
+          <?php if ($mrp > 0 && ($discount > 0 || $mrp > $displayPrice)): ?>
             <span class="mrp"><?= e(format_money($mrp)) ?></span>
+          <?php endif; ?>
+          <?php if ($discount > 0): ?>
             <span class="badge text-bg-danger"><?= e(rtrim(rtrim(number_format($discount, 2), '0'), '.')) ?>% OFF</span>
           <?php endif; ?>
         </div>

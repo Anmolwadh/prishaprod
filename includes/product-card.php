@@ -10,7 +10,7 @@ if ($discount <= 0) {
 ?>
 <div class="product-card">
   <div class="img-wrap">
-    <?php if ($discount > 0 && $mrp > $displayPrice): ?>
+    <?php if ($discount > 0): ?>
       <span class="discount-badge"><?= e(rtrim(rtrim(number_format($discount, 2), '0'), '.')) ?>% OFF</span>
     <?php endif; ?>
     <a href="<?= e(url('product.php?id=' . (int)$product['id'])) ?>">
@@ -24,7 +24,7 @@ if ($discount <= 0) {
     <?php endif; ?>
     <div class="price-row">
       <span class="price"><?= e(format_money($displayPrice)) ?></span>
-      <?php if ($mrp > $displayPrice): ?>
+      <?php if ($mrp > 0 && ($discount > 0 || $mrp > $displayPrice)): ?>
         <span class="mrp"><?= e(format_money($mrp)) ?></span>
       <?php endif; ?>
     </div>
