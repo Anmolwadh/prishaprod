@@ -57,32 +57,6 @@ include __DIR__ . '/includes/header.php';
   </div>
 </section>
 
-<!-- Janmashtami Festive Promo Banner -->
-<section class="py-3 py-md-4">
-  <div class="container">
-    <div class="festive-banner-card">
-      <div class="row align-items-center g-3 g-md-4">
-        <div class="col-lg-7 col-md-7">
-          <div class="p-3 p-md-4">
-            <span class="festive-badge mb-2"><i class="fa-solid fa-feather me-1"></i> Janmashtami Mahotsav Special</span>
-            <h2 class="festive-title">Flat 10% OFF On All Products</h2>
-            <p class="festive-text">Celebrate Janmashtami with premium disposable meal trays, food containers, ripple glasses &amp; eco plates for pooja, prasad distribution and festive catering.</p>
-            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
-              <a href="<?= e(url('shop.php')) ?>" class="btn btn-warning text-dark fw-bold px-3 py-1.5 rounded-pill shadow-sm">
-                <i class="fa-solid fa-bag-shopping me-1"></i> Shop Festive Sale
-              </a>
-              <span class="festive-coupon">Special Offer: <strong>10% OFF Applied</strong></span>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-5 col-md-5 d-none d-md-block text-end pe-4">
-          <img src="<?= e(asset('images/banner-janmashtami.jpg')) ?>" alt="Janmashtami Sale" class="img-fluid rounded-4 shadow-sm" style="max-height: 190px; object-fit: cover;">
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section class="section-pad bg-white border-top border-bottom">
   <div class="container">
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
